@@ -48,7 +48,7 @@ static uint16_t referee_protocol_pack(uint8_t *p_out, uint8_t *p_in, uint16_t le
 	uint16_t headSize = REF_PROTOCOL_HEADER_SIZE;
 	uint16_t frameSize = len + REF_HEADER_CRC_CMDID_LEN;
 
-	memcpy(p_out + headSize, &cmd_id, sizeof(cmd_id));
+	memcpy(p_out + headSize, &cmd_id, sizeof(cmd_id));          //将cmd_id复制到输出里
 	ref_append_crc8(p_out, headSize);
 	memcpy(p_out + headSize + sizeof(cmd_id), p_in, len);
 	ref_append_crc16(p_out, frameSize);
@@ -76,7 +76,7 @@ void referee_protocol_tansmit(uint16_t cmd_id, void* p_buf, uint16_t len)
 	frameSize = referee_protocol_pack(txBuf, p_buf, len, cmd_id);
 	if(ref_protocol_send != NULL)
 	{
-		ref_protocol_send(txBuf, frameSize);
+		ref_protocol_send(txBuf, frameSize);  //指针函数
 	}
 }
 
@@ -244,7 +244,7 @@ uint8_t ref_get_crc8(uint8_t *p_msg, unsigned int len, uint8_t crc8)
 **  Input:        Data to Verify,Stream length = Data + checksum
 **  Output:       True or False (CRC Verify Result)
 */
-unsigned int ref_verify_crc8(uint8_t *p_msg, unsigned int len)
++unsigned int ref_verify_crc8(uint8_t *p_msg, unsigned int len)
 {
     uint8_t uc_expected = 0;
 
