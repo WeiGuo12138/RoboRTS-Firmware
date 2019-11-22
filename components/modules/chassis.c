@@ -48,7 +48,7 @@ int32_t chassis_pid_register(struct chassis *chassis, const char *name, enum dev
     chassis->motor[i].init_offset_f = 1;
 
     chassis->ctrl[i].convert_feedback = motor_pid_input_convert;
-    pid_struct_init(&chassis->motor_pid[i], 15000, 500, 6.5f, 0.1, 0);
+      pid_struct_init(&chassis->motor_pid[i], 15000, 500, 6.5f, 0.1, 0);   //pid参数在这里初始化 应该不用咱自己调  
   }
 
   chassis->mecanum.param.wheel_perimeter = PERIMETER;
@@ -117,7 +117,7 @@ int32_t chassis_execute(struct chassis *chassis)
     chassis->mecanum.speed.vw += chassis->acc.wz/1000.0f*period;
   }
   
-  mecanum_calculate(&(chassis->mecanum));
+  mecanum_calculate(&(chassis->mecanum));   //每个轮速是在这个函数里面计算的
 
   for (int i = 0; i < 4; i++)
   {
@@ -133,13 +133,13 @@ int32_t chassis_execute(struct chassis *chassis)
     motor_device_set_current(&chassis->motor[i], (int16_t)motor_out);
   }
 
-  mecanum_position_measure(&(chassis->mecanum), wheel_fdb);
+  mecanum_position_measure(&(chassis->mecanum), wheel_fdb);//mecanum是麦克纳姆的意思
 
   return RM_OK;
 }
 
-int32_t chassis_gyro_updata(struct chassis *chassis, float yaw_angle, float yaw_rate)
-{
+int32_t chassis_gyro_updata(struct chassis *chassis, float yaw_angle, float yaw_rate)   //这里是地盘陀螺仪的数据  但是只有 角度及角速率的信息  
+{                                                                                       //所以对于要传输的IMU数据信息还需要 加速度的信息
   if (chassis == NULL)
     return -RM_INVAL;
   chassis->mecanum.gyro.yaw_gyro_angle = yaw_angle;

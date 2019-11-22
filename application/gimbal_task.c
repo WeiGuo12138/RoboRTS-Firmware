@@ -196,8 +196,8 @@ void send_gimbal_current(int16_t iq1, int16_t iq2, int16_t iq3)
 struct pid pid_pit = {0};
 struct pid pid_pit_spd = {0};
 
-static void auto_gimbal_adjust(gimbal_t pgimbal)
-{
+static void auto_gimbal_adjust(gimbal_t pgimbal)//云台自动校准程序先利用imu校准pitch，控制云台保持在水平面，当误差小于0.15度时，记录pitch中值；
+{                                               //然后YAW向左旋转直到触碰左侧限位，再向右旋转至右侧限位，计算YAW中值。
   if (auto_adjust_f)
   {
     pid_struct_init(&pid_pit, 2000, 0, 60, 0, 0);

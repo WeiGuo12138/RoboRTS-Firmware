@@ -73,7 +73,7 @@ void madgwick_ahrs_update(struct ahrs_sensor *sensor, struct attitude *atti)
     ay *= recipNorm;
     az *= recipNorm;
 
-    // Normalise magnetometer measurement
+    // Normalise magnetometer measurement  正常化磁强计测量
     recipNorm = invSqrt(mx * mx + my * my + mz * mz);
     mx *= recipNorm;
     my *= recipNorm;

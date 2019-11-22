@@ -244,7 +244,7 @@ uint8_t ref_get_crc8(uint8_t *p_msg, unsigned int len, uint8_t crc8)
 **  Input:        Data to Verify,Stream length = Data + checksum
 **  Output:       True or False (CRC Verify Result)
 */
-+unsigned int ref_verify_crc8(uint8_t *p_msg, unsigned int len)
+unsigned int ref_verify_crc8(uint8_t *p_msg, unsigned int len)
 {
     uint8_t uc_expected = 0;
 

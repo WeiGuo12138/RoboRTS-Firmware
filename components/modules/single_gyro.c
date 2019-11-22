@@ -85,7 +85,7 @@ int32_t single_gyro_adjust(struct single_gyro *gyro)
   if(gyro_can_send != NULL)
   { 
     uint8_t can_rx_data[8] = {0,1,2,3,4,5,6,7};
-    gyro_can_send(0x408, can_rx_data);
+    gyro_can_send(0x408, can_rx_data);                          //这个函数还没有找到具体实现的函数
     return RM_OK;
   }
   return RM_UNREGISTERED;

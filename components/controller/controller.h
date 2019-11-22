@@ -37,15 +37,15 @@ enum controller_type
 
 struct controller
 {
-  struct object parent;
-  enum controller_type type;
+    struct object parent;     //往往去定义一个设备的 名称等信息
+    enum controller_type type;  //在上
   uint8_t enable;
   void *param;
   void *feedback;
   float input;
   float output;
   int32_t (*convert_feedback)(struct controller *ctrl, void *feedback);
-  int32_t (*control)(struct controller *ctrl, void *param, void *feedback, float input);
+    int32_t (*control)(struct controller *ctrl, void *param, void *feedback, float input);  //函数指针，本质上是一个指针，其指向一个函数 
 };
 
 int32_t controller_register(struct controller *ctrl,

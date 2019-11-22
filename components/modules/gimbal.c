@@ -295,7 +295,7 @@ int32_t gimbal_yaw_disable(struct gimbal *gimbal)
   return RM_OK;
 }
 
-int32_t gimbal_execute(struct gimbal *gimbal)
+int32_t gimbal_execute(struct gimbal *gimbal)      //云台执行程序
 {
   float motor_out;
   struct motor_data *pdata;
@@ -303,7 +303,7 @@ int32_t gimbal_execute(struct gimbal *gimbal)
   if (gimbal == NULL)
     return -RM_INVAL;
 
-  if (gimbal->mode.bit.yaw_mode == GYRO_MODE)
+  if (gimbal->mode.bit.yaw_mode == GYRO_MODE)  //GYRO_MODE=1u 这个模式下会计算一个center_offset 
   {
     struct controller *ctrl;
     float center_offset;
@@ -311,11 +311,11 @@ int32_t gimbal_execute(struct gimbal *gimbal)
 
     yaw = gimbal->gyro_target_angle.yaw;
     center_offset = gimbal->sensor.gyro_angle.yaw - gimbal->ecd_angle.yaw;
-    ctrl = &(gimbal->ctrl[YAW_MOTOR_INDEX]);
+    ctrl = &(gimbal->ctrl[YAW_MOTOR_INDEX]);  //#define YAW_MOTOR_INDEX 0
 
     VAL_LIMIT(yaw, YAW_ANGLE_MIN + center_offset, YAW_ANGLE_MAX + center_offset);
-    controller_set_input(ctrl, yaw);
-  }
+    controller_set_input(ctrl, yaw);     //这里应该是控制的底层的输入   将所有要控制的量存入到ctrl[0]数组
+  }  
   else
   {
     struct controller *ctrl;
@@ -326,7 +326,7 @@ int32_t gimbal_execute(struct gimbal *gimbal)
     controller_set_input(ctrl, yaw);
   }
 
-  if (gimbal->mode.bit.pitch_mode == GYRO_MODE)
+  if (gimbal->mode.bit.pitch_mode == GYRO_MODE)   //同控制偏航一样的结构
   {
     struct controller *ctrl;
     float center_offset;
@@ -334,7 +334,7 @@ int32_t gimbal_execute(struct gimbal *gimbal)
 
     pitch = gimbal->gyro_target_angle.pitch;
     center_offset = gimbal->sensor.gyro_angle.pitch - gimbal->ecd_angle.pitch;
-    ctrl = &(gimbal->ctrl[PITCH_MOTOR_INDEX]);
+    ctrl = &(gimbal->ctrl[PITCH_MOTOR_INDEX]);   //#define PITCH_MOTOR_INDEX 1
 
     VAL_LIMIT(pitch, PITCH_ANGLE_MIN + center_offset, PITCH_ANGLE_MAX + center_offset);
     controller_set_input(ctrl, pitch);

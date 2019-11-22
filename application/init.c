@@ -51,7 +51,7 @@ extern int ulog_console_backend_init(void);
 
 void system_config(void)
 {
-  glb_sys_cfg = HAL_GPIO_ReadPin(SYS_CFG_Port, SYS_CFG_Pin);
+  glb_sys_cfg = HAL_GPIO_ReadPin(SYS_CFG_Port, SYS_CFG_Pin);  //这个应该就是用跳线帽来判断时底盘的主控板还是云台的主控板
 }
 
 uint8_t get_sys_cfg(void)
@@ -72,7 +72,7 @@ void hw_init(void)
   usart3_rx_callback_register(referee_uart_rx_data_handle);
   referee_send_data_register(usart3_transmit);
 
-  if(glb_sys_cfg == CHASSIS_APP)
+  if(glb_sys_cfg == CHASSIS_APP)    //CHASSIS_APP为0
   {
     rc_device_register(&rc_dev, "uart_rc", 0);
     dr16_forword_callback_register(rc_data_forword_by_can);
