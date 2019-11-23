@@ -53,6 +53,7 @@
 #define CMD_PUSH_GIMBAL_INFO                (0x0301u)
 #define CMD_SET_GIMBAL_MODE                 (0x0302u)
 #define CMD_SET_GIMBAL_ANGLE                (0x0303u)
+#define CMD_SET_GIMBAL_SPEED                (0x0306u)
 
 #define CMD_SET_FRICTION_SPEED              (0x0304u)
 #define CMD_SET_SHOOT_FREQUENTCY            (0x0305u)
@@ -93,7 +94,7 @@ struct cmd_gimbal_info
   int16_t yaw_gyro_angle;
   /* uint: degree/s */
   int16_t yaw_rate;
-  int16_t pitch_rate;
+  int16_t pitch_rate;                     //原本已经有云台的速度信息
 };
 
 struct cmd_gimbal_angle
@@ -109,6 +110,13 @@ struct cmd_gimbal_angle
   int16_t yaw;
 };
 
+struct cmd_gimbal_speed
+{
+   uint8_t speed_mode;
+   int16_t pitch_speed;
+   int16_t yaw_speed;
+};
+    
 struct cmd_chassis_speed
 {
   int16_t vx; // forward/back
@@ -150,6 +158,7 @@ struct cmd_shoot_num
 struct manifold_cmd
 {
   struct cmd_gimbal_angle gimbal_angle;
+  struct cmd_gimbal_speed gimbal_speed;
   struct cmd_chassis_speed chassis_speed;
   struct cmd_chassis_spd_acc chassis_spd_acc;
   struct cmd_firction_speed firction_speed;

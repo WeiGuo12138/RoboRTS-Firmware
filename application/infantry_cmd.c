@@ -51,6 +51,7 @@ int32_t chassis_speed_ctrl(uint8_t *buff, uint16_t len);
 int32_t chassis_spd_acc_ctrl(uint8_t *buff, uint16_t len);
 int32_t shoot_firction_ctrl(uint8_t *buff, uint16_t len);
 int32_t gimbal_angle_ctrl(uint8_t *buff, uint16_t len);
+int32_t gimbal_speed_ctrl(uint8_t *buff, uint16_t len);
 int32_t shoot_ctrl(uint8_t *buff, uint16_t len);
 int32_t student_data_transmit(uint8_t *buff, uint16_t len);
 
@@ -93,6 +94,7 @@ void infantry_cmd_task(void const *argument)
   {
     prc_dev = rc_device_find("can_rc");
     protocol_rcv_cmd_register(CMD_SET_GIMBAL_ANGLE, gimbal_angle_ctrl);
+    protocol_rcv_cmd_register(CMD_SET_GIMBAL_SPEED, gimbal_speed_ctrl);
     protocol_rcv_cmd_register(CMD_SET_FRICTION_SPEED, shoot_firction_ctrl);
     protocol_rcv_cmd_register(CMD_SET_SHOOT_FREQUENTCY, shoot_ctrl);
     protocol_rcv_cmd_register(CMD_GIMBAL_ADJUST, gimbal_adjust_cmd);
@@ -134,7 +136,9 @@ void infantry_cmd_task(void const *argument)
         if (event.value.signals & MANIFOLD2_GIMBAL_SIGNAL)
         {
           struct cmd_gimbal_angle *pangle;
+          struct cmd_gimbal_speed *pgimspeed;
           pangle = &manifold_cmd.gimbal_angle;
+          pgimspeed = &manifold_cmd.gimbal_speed;
           if (pangle->ctrl.bit.pitch_mode == 0)
           {
             gimbal_set_pitch_angle(pgimbal, pangle->pitch / 10.0f);
@@ -150,6 +154,11 @@ void infantry_cmd_task(void const *argument)
           else
           {
             gimbal_set_yaw_speed(pgimbal, pangle->yaw / 10.0f);
+          }
+          if(pgimspeed->speed_mode == 1)
+          {
+             gimbal_set_pitch_speed(pgimbal,pgimspeed->pitch_speed);    //要仔细看一下 gimbal_set_speed 底层如何实现
+             gimbal_set_yaw_speed(pgimbal,pgimspeed->yaw_speed);
           }
         }
 
@@ -210,6 +219,16 @@ int32_t gimbal_angle_ctrl(uint8_t *buff, uint16_t len)
   if (len == sizeof(struct cmd_gimbal_angle))
   {
     memcpy(&manifold_cmd.gimbal_angle, buff, len);
+    osSignalSet(cmd_task_t, MANIFOLD2_GIMBAL_SIGNAL);
+  }
+  return 0;
+}
+
+int32_t gimbal_speed_ctrl(uint8_t *buff, uint16_t len)
+{
+  if (len == sizeof(struct cmd_gimbal_angle))
+  {
+    memcpy(&manifold_cmd.gimbal_speed, buff, len);
     osSignalSet(cmd_task_t, MANIFOLD2_GIMBAL_SIGNAL);
   }
   return 0;
