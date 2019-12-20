@@ -140,7 +140,7 @@ int32_t gimbal_set_pitch_speed(struct gimbal *gimbal, float pitch)
   return RM_OK;
 }
 
-int32_t gimbal_set_yaw_speed(struct gimbal *gimbal, float yaw)
+int32_t gimbal_set_yaw_speed(struct gimbal *gimbal, float yaw)   
 {
   if (gimbal == NULL)
     return -RM_INVAL;

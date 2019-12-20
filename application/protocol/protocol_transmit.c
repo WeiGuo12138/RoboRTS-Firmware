@@ -734,16 +734,16 @@ uint32_t protocol_s_extract(struct perph_interface *obj)
     {
     case UNPACK_PACK_STAGE_FIND_SOF:
 
-      status = protocol_s_find_pack_header(rcvd);
+      status = protocol_s_find_pack_header(rcvd);      //获得帧头
       if (status == PROTOCOL_SUCCESS)
       {
         rcvd->state = UNPACK_PACK_STAGE_AUTH_HEADER;
       }
       break;
-
+                                                       //帧头为0xAA
     case UNPACK_PACK_STAGE_AUTH_HEADER:
 
-      status = protocol_s_auth_pack_header(rcvd);
+      status = protocol_s_auth_pack_header(rcvd);    //校验帧
 
       if (status == PROTOCOL_SUCCESS)
       { /* malloc memory size equal to header size adding data size */

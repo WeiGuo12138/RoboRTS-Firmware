@@ -157,8 +157,8 @@ void infantry_cmd_task(void const *argument)
           }
           if(pgimspeed->speed_mode == 1)
           {
-             gimbal_set_pitch_speed(pgimbal,pgimspeed->pitch_speed);    //要仔细看一下 gimbal_set_speed 底层如何实现
-             gimbal_set_yaw_speed(pgimbal,pgimspeed->yaw_speed);
+             gimbal_set_pitch_speed(pgimbal,pgimspeed->pitch_speed / 10.0f);    //要仔细看一下 gimbal_set_speed 底层如何实现
+             gimbal_set_yaw_speed(pgimbal,pgimspeed->yaw_speed / 10.0f);
           }
         }
 
@@ -226,7 +226,7 @@ int32_t gimbal_angle_ctrl(uint8_t *buff, uint16_t len)
 
 int32_t gimbal_speed_ctrl(uint8_t *buff, uint16_t len)
 {
-  if (len == sizeof(struct cmd_gimbal_angle))
+  if (len == sizeof(struct cmd_gimbal_speed))
   {
     memcpy(&manifold_cmd.gimbal_speed, buff, len);
     osSignalSet(cmd_task_t, MANIFOLD2_GIMBAL_SIGNAL);
