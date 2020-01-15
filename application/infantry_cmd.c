@@ -34,6 +34,7 @@
 #define MANIFOLD2_SHOOT_SIGNAL (1 << 2)
 #define MANIFOLD2_FRICTION_SIGNAL (1 << 3)
 #define MANIFOLD2_CHASSIS_ACC_SIGNAL (1 << 4)
+#define MANIFOLD2_GIMBAL_SPEED_SIGNAL (1 << 5)
 
 extern osThreadId cmd_task_t;
 
@@ -110,7 +111,8 @@ void infantry_cmd_task(void const *argument)
     else
     {
       event = osSignalWait(MANIFOLD2_CHASSIS_SIGNAL | MANIFOLD2_GIMBAL_SIGNAL |
-                               MANIFOLD2_SHOOT_SIGNAL | MANIFOLD2_FRICTION_SIGNAL | MANIFOLD2_CHASSIS_ACC_SIGNAL,
+                               MANIFOLD2_SHOOT_SIGNAL | MANIFOLD2_FRICTION_SIGNAL | 
+			                         MANIFOLD2_CHASSIS_ACC_SIGNAL | MANIFOLD2_GIMBAL_SPEED_SIGNAL,
                            500);
 
       if (event.status == osEventSignal)
@@ -136,9 +138,9 @@ void infantry_cmd_task(void const *argument)
         if (event.value.signals & MANIFOLD2_GIMBAL_SIGNAL)
         {
           struct cmd_gimbal_angle *pangle;
-          struct cmd_gimbal_speed *pgimspeed;
+          
           pangle = &manifold_cmd.gimbal_angle;
-          pgimspeed = &manifold_cmd.gimbal_speed;
+          
           if (pangle->ctrl.bit.pitch_mode == 0)
           {
             gimbal_set_pitch_angle(pgimbal, pangle->pitch / 10.0f);
@@ -155,13 +157,24 @@ void infantry_cmd_task(void const *argument)
           {
             gimbal_set_yaw_speed(pgimbal, pangle->yaw / 10.0f);
           }
-          if(pgimspeed->speed_mode == 1)
+//          if(pgimspeed->speed_mode == 1)
+//          {
+//             gimbal_set_pitch_speed(pgimbal,pgimspeed->pitch_speed / 10.0f);    //要仔细看一下 gimbal_set_speed 底层如何实现
+//             gimbal_set_yaw_speed(pgimbal,pgimspeed->yaw_speed / 10.0f);
+//          }
+        }
+        
+				if (event.value.signals & MANIFOLD2_GIMBAL_SPEED_SIGNAL)
+				{
+					struct cmd_gimbal_speed *pgimspeed;
+					pgimspeed = &manifold_cmd.gimbal_speed;
+				  if(pgimspeed->speed_mode == 1)
           {
              gimbal_set_pitch_speed(pgimbal,pgimspeed->pitch_speed / 10.0f);    //要仔细看一下 gimbal_set_speed 底层如何实现
              gimbal_set_yaw_speed(pgimbal,pgimspeed->yaw_speed / 10.0f);
           }
-        }
-
+				}
+				
         if (event.value.signals & MANIFOLD2_SHOOT_SIGNAL)
         {
           struct cmd_shoot_num *pctrl;
@@ -229,7 +242,7 @@ int32_t gimbal_speed_ctrl(uint8_t *buff, uint16_t len)
   if (len == sizeof(struct cmd_gimbal_speed))
   {
     memcpy(&manifold_cmd.gimbal_speed, buff, len);
-    osSignalSet(cmd_task_t, MANIFOLD2_GIMBAL_SIGNAL);
+    osSignalSet(cmd_task_t, MANIFOLD2_GIMBAL_SPEED_SIGNAL);
   }
   return 0;
 }
